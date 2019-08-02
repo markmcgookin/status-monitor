@@ -34,10 +34,13 @@ namespace status_monitor
                 var mem_bash = $"free -m | awk 'NR==2{{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }}'";
                 var mem = Bash(mem_bash);
 
+                var disk_bash = "df -h | awk '$NF==\"/\"{printf \"%d/%dGB %s\", $3,$2,$5}'";
+                var disk = Bash(disk_bash);
+
                 var date = System.DateTime.Now.ToString("dd-MM-yyyy");
                 var time = System.DateTime.Now.ToString("HH:mm:ss");
 
-                File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{date}\t{time}", Encoding.UTF8);
+                File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}", Encoding.UTF8);
             }
         }
 
