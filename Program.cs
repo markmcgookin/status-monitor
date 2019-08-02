@@ -13,6 +13,7 @@ namespace status_monitor
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting");
             while(true)
             {
                 if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
