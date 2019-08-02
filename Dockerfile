@@ -22,7 +22,6 @@ FROM mcr.microsoft.com/dotnet/core/runtime:2.2 AS runtime
 
 # copy the library
 RUN ["apt-get", "update"]
-RUN ["apt-get", "-y", "install", "libgdiplus"]
 
 WORKDIR /app
 COPY --from=build /app/out ./
