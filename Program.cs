@@ -21,29 +21,17 @@ namespace status_monitor
                 }
 
                 var path = "info.dat";
-                var pass = "pi";
-                var username = "pi";
-                var address = "blackbox.local";
-
                 if(args.Length > 0)
                 {
                     path = args[0];
                 }
-                if(args.Length > 1)
-                {
-                    if(args.Length < 4)
-                    {
-                        throw new ArgumentException("Not enough argyments to connect to remote pi");
-                    }
-                }
-
 
                 var host = Dns.GetHostEntry(Dns.GetHostName());
                 var ip = host.AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-                var cpu_bash = $"sshpass -p {pass} ssh -o StrictHostKeyChecking=no {username}@{address} top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
+                var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
                 var cpu = Bash(cpu_bash);
 
-                var mem_bash = $"sshpass -p {pass} ssh -o StrictHostKeyChecking=no {username}@{address} free -m | awk 'NR==2{{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }}'";
+                var mem_bash = $"free -m | awk 'NR==2{{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }}'";
                 var mem = Bash(mem_bash);
 
                 var date = System.DateTime.Now.ToString("dd-MM-yyyy");
@@ -51,12 +39,6 @@ namespace status_monitor
 
                 File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{date}\t{time}", Encoding.UTF8);
             }
-
-            //Console.WriteLine(ip.ToString());
-            //Console.WriteLine(cpu.ToString());
-            //Console.WriteLine(mem.ToString());
-            //Console.WriteLine(date.ToString());
-            //Console.WriteLine(time.ToString());
         }
 
         public static string Bash(string cmd)
