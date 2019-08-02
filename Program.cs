@@ -28,7 +28,7 @@ namespace status_monitor
                 }
 
                 var host = Dns.GetHostEntry(Dns.GetHostName());
-                var ip = host.AddressList.Where(x => x.AddressFamily == AddressFamily.InterNetwork).ToString().Trim();
+                var ip = host.AddressList.Where(x => x.AddressFamily == AddressFamily.InterNetwork);
 
                 foreach(var i in ip)
                 {
