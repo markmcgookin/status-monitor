@@ -32,7 +32,7 @@ namespace status_monitor
 
                 foreach(var i in ip)
                 {
-                    Console.WriteLine(i.ToString());
+                    Console.WriteLine(i.ToString() + " " + i.AddressFamily.ToString());
                 }
 
                 var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
