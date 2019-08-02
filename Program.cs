@@ -28,7 +28,13 @@ namespace status_monitor
                 }
 
                 var host = Dns.GetHostEntry(Dns.GetHostName());
-                var ip = host.AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork && !x.ToString().StartsWith("127")).ToString().Trim();
+                var ip = host.AddressList.Where(x => x.AddressFamily == AddressFamily.InterNetwork).ToString().Trim();
+
+                foreach(var i in ip)
+                {
+                    Console.WriteLine(i.ToString());
+                }
+
                 var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
                 var cpu = Bash(cpu_bash);
 
