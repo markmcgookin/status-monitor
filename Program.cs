@@ -57,8 +57,6 @@ namespace status_monitor
                 var time = System.DateTime.Now.ToString("HH:mm:ss");
 
                 File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}", Encoding.UTF8);
-
-                Thread.Sleep(500); //wait half a second
             }
         }
 
