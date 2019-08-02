@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace status_monitor
 {
@@ -27,13 +28,21 @@ namespace status_monitor
                     path = args[0];
                 }
 
-                var host = Dns.GetHostEntry(Dns.GetHostName());
-                var ip = host.AddressList;
-
-                foreach(var i in ip)
+                var ip = IPAddress.None;
+                try
                 {
-                    Console.WriteLine(i.ToString() + " " + i.AddressFamily.ToString());
+                    using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+                    {
+                        // Connect socket to Google's Public DNS service
+                        socket.Connect("8.8.8.8", 65530);
+                        if (!(socket.LocalEndPoint is IPEndPoint endPoint))
+                        {
+                            throw new InvalidOperationException($"Error occurred casting {socket.LocalEndPoint} to IPEndPoint");
+                        }
+                        ip = endPoint.Address;
+                    }
                 }
+                catch { }
 
                 var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
                 var cpu = Bash(cpu_bash);
@@ -48,6 +57,8 @@ namespace status_monitor
                 var time = System.DateTime.Now.ToString("HH:mm:ss");
 
                 File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}", Encoding.UTF8);
+
+                Thread.Sleep(500); //wait half a second
             }
         }
 
