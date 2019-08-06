@@ -13,19 +13,19 @@ namespace status_monitor
         static void Main(string[] args)
         {
             Console.WriteLine("Starting");
-            while(true)
+            while (true)
             {
-                if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     throw new NotSupportedException("This only works for linux at the minute as I can't be bothered making it cross platform");
                 }
 
                 var path = "info.dat";
-                if(args.Length > 0)
+                if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("STATUS_OUTPUT")))
                 {
-                    path = args[0];
+                    path = Environment.GetEnvironmentVariable("STATUS_OUTPUT");
                 }
-
+                
                 var ip = IPAddress.None;
                 try
                 {
@@ -61,7 +61,7 @@ namespace status_monitor
         public static string Bash(string cmd)
         {
             var escapedArgs = cmd.Replace("\"", "\\\"");
-            
+
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
