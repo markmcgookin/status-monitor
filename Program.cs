@@ -13,6 +13,15 @@ namespace status_monitor
         static void Main(string[] args)
         {
             Console.WriteLine("Starting");
+
+            var path = "info.dat";
+            if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("STATUS_OUTPUT")))
+            {
+                path = Environment.GetEnvironmentVariable("STATUS_OUTPUT");
+            }
+
+            Console.WriteLine("Output: " + path);
+
             while (true)
             {
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -20,14 +29,6 @@ namespace status_monitor
                     throw new NotSupportedException("This only works for linux at the minute as I can't be bothered making it cross platform");
                 }
 
-                var path = "info.dat";
-                if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("STATUS_OUTPUT")))
-                {
-                    path = Environment.GetEnvironmentVariable("STATUS_OUTPUT");
-                }
-                
-                Console.WriteLine("Output: " + path);
-                
                 var ip = IPAddress.None;
                 try
                 {
@@ -42,21 +43,32 @@ namespace status_monitor
                         ip = endPoint.Address;
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"An error occcured {e.Message}");
+                }
 
-                var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
-                var cpu = Bash(cpu_bash);
+                try
+                {
+                    var cpu_bash = $"top -bn1 | grep load | awk '{{printf \"%.2f\", $(NF-2)}}'";
+                    var cpu = Bash(cpu_bash);
 
-                var mem_bash = $"free -m | awk 'NR==2{{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }}'";
-                var mem = Bash(mem_bash);
+                    var mem_bash = $"free -m | awk 'NR==2{{printf \"%s/%sMB %.2f%%\", $3,$2,$3*100/$2 }}'";
+                    var mem = Bash(mem_bash);
 
-                var disk_bash = "df -h | awk '$NF==\"/\"{printf \"%d/%dGB %s\", $3,$2,$5}'";
-                var disk = Bash(disk_bash);
+                    var disk_bash = "df -h | awk '$NF==\"/\"{printf \"%d/%dGB %s\", $3,$2,$5}'";
+                    var disk = Bash(disk_bash);
 
-                var date = System.DateTime.Now.ToString("dd-MM-yyyy");
-                var time = System.DateTime.Now.ToString("HH:mm:ss");
+                    var date = System.DateTime.Now.ToString("dd-MM-yyyy");
+                    var time = System.DateTime.Now.ToString("HH:mm:ss");
 
-                File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}", Encoding.UTF8);
+                    Console.WriteLine($"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}");
+                    File.WriteAllText(path, $"{ip}\t{cpu}%\t{mem}\t{disk}\t{date}\t{time}", Encoding.UTF8);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"An exception occcured {e.Message}");
+                }
             }
         }
 
