@@ -26,6 +26,8 @@ namespace status_monitor
                     path = Environment.GetEnvironmentVariable("STATUS_OUTPUT");
                 }
                 
+                Console.WriteLine("Output: " + path);
+                
                 var ip = IPAddress.None;
                 try
                 {
