@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Text;
-using System.Threading;
 
 namespace status_monitor
 {
@@ -75,6 +73,7 @@ namespace status_monitor
                     CreateNoWindow = true,
                 }
             };
+
             process.Start();
             string result = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
